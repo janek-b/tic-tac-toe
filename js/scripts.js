@@ -17,23 +17,61 @@ function Board(ctx, width, height) {
   this.turn = 1;
 };
 
+Board.prototype.animateLine = function(x, y) {
+  var line1StartX = x*this.cellWidth + this.cellWidth/5;
+  var line1StartY = y*this.cellHeight + this.cellHeight/5;
+  var line1EndX = x*this.cellWidth + this.cellWidth - this.cellWidth/5;
+  var line1EndY = y*this.cellHeight + this.cellHeight - this.cellHeight/5;
+  var line2StartX = x*this.cellWidth + this.cellWidth - this.cellWidth/5;
+  var line2StartY = y*this.cellHeight + this.cellHeight/5;
+  var line2EndX = x*this.cellWidth + this.cellWidth/5;
+  var line2EndY = y*this.cellHeight + this.cellHeight - this.cellHeight/5;
+  var amount = 0;
+  var c = this.ctx;
+  var lineInt = setInterval(function() {
+    amount += 0.05;
+    if (amount > 1) {
+      amount = 1;
+      clearInterval(lineInt);
+    };
+    c.clearRect(0, 0, this.width, this.height);
+    c.moveTo(line1StartX, line1StartY);
+    c.lineTo(line1StartX + (line1EndX - line1StartX)*amount, line1StartY + (line1EndY - line1StartY)*amount);
+    c.stroke();
+    c.moveTo(line2StartX, line2StartY);
+    c.lineTo(line2StartX + (line2EndX - line2StartX)*amount, line2StartY + (line2EndY - line2StartY)*amount);
+    c.stroke();
+  }, 20);
+};
+
+
+Board.prototype.animateCircle = function(x, y) {
+  var amount = 0;
+  var c = this.ctx;
+  var centerX = x*this.cellWidth + this.cellWidth/2;
+  var centerY = y*this.cellHeight + this.cellHeight/2;
+  var radius = (this.cellWidth * (1.5/5));
+  var circleInt = setInterval(function() {
+    amount += 0.05;
+    if (amount > 1) {
+      amount = 1;
+      clearInterval(circleInt);
+    };
+    c.clearRect(0, 0, this.width, this.height);
+    c.beginPath();
+    c.arc(centerX, centerY, radius, 0, (2*Math.PI)*amount);
+    c.stroke();
+  }, 20);
+};
+
 Board.prototype.draw = function() {
   this.ctx.lineWidth = 10;
   for (var x = 0; x < 3; x++) {
     for (var y = 0; y < 3; y++) {
       if (this.grid[x][y] === "X") {
-        this.ctx.beginPath();
-        this.ctx.moveTo(x*this.cellWidth + this.cellWidth/5, y*this.cellHeight + this.cellHeight/5)
-        this.ctx.lineTo(x*this.cellWidth + this.cellWidth - this.cellWidth/5, y*this.cellHeight + this.cellHeight - this.cellHeight/5)
-        this.ctx.stroke();
-        this.ctx.beginPath();
-        this.ctx.moveTo(x*this.cellWidth + this.cellWidth - this.cellWidth/5, y*this.cellHeight + this.cellHeight/5)
-        this.ctx.lineTo(x*this.cellWidth + this.cellWidth/5, y*this.cellHeight + this.cellHeight - this.cellHeight/5)
-        this.ctx.stroke();
+        this.animateLine(x, y);
       } else if (this.grid[x][y] === "O") {
-        this.ctx.beginPath();
-        this.ctx.arc(x*this.cellWidth + this.cellWidth/2, y*this.cellHeight + this.cellHeight/2, (this.cellWidth * (1.5/5)), 0,2*Math.PI);
-        this.ctx.stroke();
+        this.animateCircle(x, y);
       };
     };
   };
@@ -69,27 +107,26 @@ Board.prototype.checkGame = function() {
   var result = "";
   if (this.turn > 9) {
     result = "draw"
-  } else {
-    for (var x = 0; x < 3; x++) {
-      if (this.grid[x][0] === this.grid[x][1] && this.grid[x][1] === this.grid[x][2]) {
-        if (this.grid[x][0] != "") {
-          result = this.grid[x][0];
-        };
+  };
+  for (var x = 0; x < 3; x++) {
+    if (this.grid[x][0] === this.grid[x][1] && this.grid[x][1] === this.grid[x][2]) {
+      if (this.grid[x][0] != "") {
+        result = this.grid[x][0];
       };
     };
-    for (var y = 0; y < 3; y++) {
-      if (this.grid[0][y] === this.grid[1][y] && this.grid[1][y] === this.grid[2][y]) {
-        if (this.grid[0][y] != "") {
-          result = this.grid[0][y];
-        };
+  };
+  for (var y = 0; y < 3; y++) {
+    if (this.grid[0][y] === this.grid[1][y] && this.grid[1][y] === this.grid[2][y]) {
+      if (this.grid[0][y] != "") {
+        result = this.grid[0][y];
       };
     };
-    if (this.grid[0][0] === this.grid[1][1] && this.grid[1][1] === this.grid[2][2]) {
-      result = this.grid[0][0];
-    };
-    if (this.grid[0][2] === this.grid[1][1] && this.grid[1][1] === this.grid[2][0]) {
-      result = this.grid[0][2];
-    };
+  };
+  if (this.grid[0][0] === this.grid[1][1] && this.grid[1][1] === this.grid[2][2]) {
+    result = this.grid[0][0];
+  };
+  if (this.grid[0][2] === this.grid[1][1] && this.grid[1][1] === this.grid[2][0]) {
+    result = this.grid[0][2];
   };
   return result;
 };
@@ -114,11 +151,10 @@ $(function() {
   };
 
   gameBoard.draw();
-  var startGame = setInterval(autoRun, 100);
+  var startGame = setInterval(autoRun, 400);
 
   function autoRun() {
     var endGame = gameBoard.checkGame();
-    console.log(endGame);
     if (endGame === "X") {
       alert("X won")
       clearInterval(startGame);
