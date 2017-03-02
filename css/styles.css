@@ -3,3 +3,17 @@
   display: block;
   margin: auto;
 }
+
+h1 {
+  text-align: center;
+}
+
+#gameOverResult {
+  font-size: 100px;
+  text-align: center;
+}
+
+#myModalLabel {
+  font-size: 50px;
+  text-align: center;
+}

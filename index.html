@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="css/styles.css" type="text/css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="js/scripts.js"></script>
     <title>Tic-Tac-Toe</title>
   </head>
@@ -15,10 +16,24 @@
         </div>
       </div>
       <div class="row">
-        <button id="reset"type="button" class="btn btn-primary">Reset Game</button>
-      </div>
-      <div class="row">
         <canvas id="canvas" width="600" height="600"></canvas>
+        <div class="modal fade" id="gameOverModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Game Over</h4>
+              </div>
+              <div class="modal-body">
+                <h3 id="gameOverResult"></h3>
+              </div>
+              <div class="modal-footer">
+                <button id="newGame" type="button" class="btn btn-primary btn-block" data-dismiss="modal">Play Again</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </body>

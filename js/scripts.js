@@ -17,6 +17,16 @@ function Board(ctx, width, height) {
   this.turn = 1;
 };
 
+Board.prototype.resetBoard = function() {
+  for (var x = 0; x < 3; x++) {
+    for (var y = 0; y < 3; y++) {
+      this.grid[x][y] = "";
+    };
+  };
+  this.turn = 1;
+  this.ctx.clearRect(0, 0, this.width, this.height);
+}
+
 Board.prototype.animateLine = function(x, y) {
   var line1StartX = x*this.cellWidth + this.cellWidth/5;
   var line1StartY = y*this.cellHeight + this.cellHeight/5;
@@ -131,6 +141,16 @@ Board.prototype.checkGame = function() {
   return result;
 };
 
+Board.prototype.compRandom = function() {
+  var x = Math.floor(Math.random()*3);
+  var y = Math.floor(Math.random()*3);
+  if (this.grid[x][y] === "") {
+    this.setMark(x, y);
+  } else {
+    this.compRandom();
+  };
+};
+
 function Player(mark) {
   this.mark = mark;
 };
@@ -156,14 +176,27 @@ $(function() {
   function autoRun() {
     var endGame = gameBoard.checkGame();
     if (endGame === "X") {
-      alert("X won")
+      $("#gameOverResult").text("X's WIN!!!")
+      $("#gameOverModal").modal();
       clearInterval(startGame);
     } else if (endGame === "O") {
-      alert("O won")
+      $("#gameOverResult").text("O's WIN!!!")
+      $("#gameOverModal").modal();
       clearInterval(startGame);
     } else if (endGame === "draw") {
-      alert("cats game")
+      $("#gameOverResult").text("Cat's Game!!!")
+      $("#gameOverModal").modal();
       clearInterval(startGame);
+    } else {
+      if (gameBoard.turn % 2 === 0) {
+        gameBoard.compRandom();
+      };
     };
   };
+
+  $("#newGame").click(function() {
+    gameBoard.resetBoard();
+    gameBoard.draw();
+    startGame = setInterval(autoRun, 400)
+  })
 });
