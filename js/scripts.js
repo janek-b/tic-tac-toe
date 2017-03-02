@@ -1,5 +1,10 @@
 // Back-End
-function Board() {
+function Board(ctx, width, height) {
+  this.ctx = ctx;
+  this.width = width;
+  this.height = height;
+  this.cellWidth = this.width/3;
+  this.cellHeight = this.height/3;
   this.grid = [];
   for (var x = 0; x < 3; x++) {
     this.grid[x] = [];
@@ -11,6 +16,33 @@ function Board() {
   this.player2 = new Player("O")
   this.turn = 1;
 };
+
+Board.prototype.draw = function() {
+
+  for (var x = 0; x < 3; x++) {
+    for (var y = 0; y < 3; y++) {
+      if (this.grid[x][y] === "X") {
+        //draw x
+      } else if (this.grid[x][y] === "O") {
+        // draw o
+      }
+    }
+  }
+
+
+  for (var x = this.cellWidth; x < this.width; x = x+this.cellWidth) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, this.height);
+    ctx.stroke();
+  }
+  for (var y = this.cellHeight; y < this.height; y = y+this.cellHeight) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(this.width, y);
+    ctx.stroke();
+  }
+}
 
 Board.prototype.setMark = function(x, y) {
   if (this.grid[x][y] === "") {
@@ -61,33 +93,20 @@ var testboard = new Board();
 $(function() {
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
-  var width = canvas.width;
-  var height = canvas.height;
-  var cellWidth = width/3;
-  var cellHeight = height/3;
-  // ctx.lineWidth = 10;
-
   canvas.addEventListener("mousedown", getPos, false);
+
+  var gameBoard = new Board(ctx, canvas.width, canvas.height);
 
   function getPos(event) {
     var rect = canvas.getBoundingClientRect();
-    var x = Math.floor((event.clientX - rect.left)/cellWidth);
-    var y = Math.floor((event.clientY - rect.top)/cellHeight);
+    var x = Math.floor((event.clientX - rect.left)/gameBoard.cellWidth);
+    var y = Math.floor((event.clientY - rect.top)/gameBoard.cellHeight);
     console.log(x, y);
   }
 
-  for (var x = cellWidth; x < width; x = x+cellWidth) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, height);
-    ctx.stroke();
-  }
-  for (var y = cellHeight; y < height; y = y+cellHeight) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(width, y);
-    ctx.stroke();
-  }
+
+
+
 
 
 
