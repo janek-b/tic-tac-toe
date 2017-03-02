@@ -13,15 +13,17 @@ function Board() {
 };
 
 Board.prototype.setMark = function(x, y) {
-  if (this.turn % 2 === 0) {
-    this.grid[x][y] = this.player2.mark;
-    this.turn ++;
-  } else if (this.turn % 2 != 0) {
-    this.grid[x][y] = this.player1.mark;
-    this.turn ++;
-  }
-  return this.checkGame();
-}
+  if (this.grid[x][y] === "") {
+    if (this.turn % 2 === 0) {
+      this.grid[x][y] = this.player2.mark;
+      this.turn ++;
+    } else if (this.turn % 2 != 0) {
+      this.grid[x][y] = this.player1.mark;
+      this.turn ++;
+    };
+    return this.checkGame();
+  };
+};
 
 Board.prototype.checkGame = function() {
   var result = "";
@@ -55,6 +57,9 @@ function Player(mark) {
 
 var testboard = new Board();
 testboard.setMark(1, 1);
+console.log(testboard.turn);
+testboard.setMark(1, 1);
+console.log(testboard.turn);
 testboard.setMark(1, 2);
 testboard.setMark(0, 0);
 console.log(testboard.setMark(2, 1));
