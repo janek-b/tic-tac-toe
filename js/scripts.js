@@ -56,18 +56,42 @@ function Player(mark) {
 
 
 var testboard = new Board();
-testboard.setMark(1, 1);
-console.log(testboard.turn);
-testboard.setMark(1, 1);
-console.log(testboard.turn);
-testboard.setMark(1, 2);
-testboard.setMark(0, 0);
-console.log(testboard.setMark(2, 1));
-console.log(testboard.setMark(2, 2));
-testboard.setMark(1, 0);
-console.log(testboard);
+
 // Front-End
 $(function() {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var width = canvas.width;
+  var height = canvas.height;
+  var cellWidth = width/3;
+  var cellHeight = height/3;
+  // ctx.lineWidth = 10;
 
+  canvas.addEventListener("mousedown", getPos, false);
+
+  function getPos(event) {
+    var rect = canvas.getBoundingClientRect();
+    var x = Math.floor((event.clientX - rect.left)/cellWidth);
+    var y = Math.floor((event.clientY - rect.top)/cellHeight);
+    console.log(x, y);
+  }
+
+  for (var x = cellWidth; x < width; x = x+cellWidth) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+  for (var y = cellHeight; y < height; y = y+cellHeight) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
+
+
+
+
+  // console.log(cellWidth);
 
 })
