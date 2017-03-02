@@ -18,31 +18,38 @@ function Board(ctx, width, height) {
 };
 
 Board.prototype.draw = function() {
-
+  this.ctx.lineWidth = 10;
   for (var x = 0; x < 3; x++) {
     for (var y = 0; y < 3; y++) {
       if (this.grid[x][y] === "X") {
-        //draw x
+        this.ctx.beginPath();
+        this.ctx.moveTo(x*this.cellWidth + this.cellWidth/5, y*this.cellHeight + this.cellHeight/5)
+        this.ctx.lineTo(x*this.cellWidth + this.cellWidth - this.cellWidth/5, y*this.cellHeight + this.cellHeight - this.cellHeight/5)
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(x*this.cellWidth + this.cellWidth - this.cellWidth/5, y*this.cellHeight + this.cellHeight/5)
+        this.ctx.lineTo(x*this.cellWidth + this.cellWidth/5, y*this.cellHeight + this.cellHeight - this.cellHeight/5)
+        this.ctx.stroke();
       } else if (this.grid[x][y] === "O") {
-        // draw o
-      }
-    }
-  }
-
-
+        this.ctx.beginPath();
+        this.ctx.arc(x*this.cellWidth + this.cellWidth/2, y*this.cellHeight + this.cellHeight/2, (this.cellWidth * (1.5/5)), 0,2*Math.PI);
+        this.ctx.stroke();
+      };
+    };
+  };
   for (var x = this.cellWidth; x < this.width; x = x+this.cellWidth) {
-    ctx.beginPath();
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, this.height);
-    ctx.stroke();
-  }
+    this.ctx.beginPath();
+    this.ctx.moveTo(x, 0);
+    this.ctx.lineTo(x, this.height);
+    this.ctx.stroke();
+  };
   for (var y = this.cellHeight; y < this.height; y = y+this.cellHeight) {
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(this.width, y);
-    ctx.stroke();
-  }
-}
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, y);
+    this.ctx.lineTo(this.width, y);
+    this.ctx.stroke();
+  };
+};
 
 Board.prototype.setMark = function(x, y) {
   if (this.grid[x][y] === "") {
@@ -53,6 +60,7 @@ Board.prototype.setMark = function(x, y) {
       this.grid[x][y] = this.player1.mark;
       this.turn ++;
     };
+    this.draw();
     return this.checkGame();
   };
 };
@@ -64,12 +72,16 @@ Board.prototype.checkGame = function() {
   } else {
     for (var x = 0; x < 3; x++) {
       if (this.grid[x][0] === this.grid[x][1] && this.grid[x][1] === this.grid[x][2]) {
-        result = this.grid[x][0];
+        if (this.grid[x][0] != "") {
+          result = this.grid[x][0];
+        };
       };
     };
     for (var y = 0; y < 3; y++) {
       if (this.grid[0][y] === this.grid[1][y] && this.grid[1][y] === this.grid[2][y]) {
-        result = this.grid[0][y];
+        if (this.grid[0][y] != "") {
+          result = this.grid[0][y];
+        };
       };
     };
     if (this.grid[0][0] === this.grid[1][1] && this.grid[1][1] === this.grid[2][2]) {
@@ -84,10 +96,7 @@ Board.prototype.checkGame = function() {
 
 function Player(mark) {
   this.mark = mark;
-}
-
-
-var testboard = new Board();
+};
 
 // Front-End
 $(function() {
@@ -101,16 +110,24 @@ $(function() {
     var rect = canvas.getBoundingClientRect();
     var x = Math.floor((event.clientX - rect.left)/gameBoard.cellWidth);
     var y = Math.floor((event.clientY - rect.top)/gameBoard.cellHeight);
-    console.log(x, y);
-  }
+    gameBoard.setMark(x, y);
+  };
 
+  gameBoard.draw();
+  var startGame = setInterval(autoRun, 100);
 
-
-
-
-
-
-
-  // console.log(cellWidth);
-
-})
+  function autoRun() {
+    var endGame = gameBoard.checkGame();
+    console.log(endGame);
+    if (endGame === "X") {
+      alert("X won")
+      clearInterval(startGame);
+    } else if (endGame === "O") {
+      alert("O won")
+      clearInterval(startGame);
+    } else if (endGame === "draw") {
+      alert("cats game")
+      clearInterval(startGame);
+    };
+  };
+});
