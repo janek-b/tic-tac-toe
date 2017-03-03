@@ -160,94 +160,113 @@ Board.prototype.oCount = function() {
       }
     }
   }
-  console.log(count);
   return count;
 }
 
-Board.prototype.smartComp = function() {
-  var columns = [0,1,2];
-  if (this.grid[1][1] === "") {
-    this.setMark(1, 1);
-  } else if (this.oCount() > 1) {
-    for (var x = 0; x < 3; x++) {
-      console.log("check O");
-      if (this.grid[x].includes("O")) {
-        if (this.grid[x].indexOf("O") != this.grid[x].lastIndexOf("O")) {
-          var colGap = this.grid[x].findIndex(function(row) {
-            return row === "";
-          });
-          this.setMark(x, colGap);
+Board.prototype.checkDiagonal = function(mark) {
+  for (var x = 0; x < 3; x++) {
+    if (this.grid[1][1] === mark) {
+      if (x === 0) {
+        if ((this.grid[x][0] === mark) && (this.grid[2][2] === "")) {
+          this.setMark(2, 2);
+          return true;
           break;
-        } else {
-          var colY = this.grid[x].indexOf("O");
-          var rows = columns.filter(function(col) {
-            return col != x;
-          });
-          var cols = columns.filter(function(col) {
-            return col != colY;
-          });
-          if (this.grid[rows[0]][colY] === "O") {
-            this.setMark(rows[1], colY);
-            break;
-          } else if (this.grid[rows[1]][colY] === "O") {
-            this.setMark(rows[0], colY);
-            break;
-          } else if (this.grid[rows[0]][cols[0]] === "O") {
-            this.setMark(rows[1], cols[1]);
-            break;
-          } else if (this.grid[rows[0]][cols[1]] === "O") {
-            this.setMark(rows[1], cols[0]);
-            break;
-          } else if (this.grid[rows[1]][cols[0]] === "O") {
-            this.setMark(rows[0], cols[1]);
-            break;
-          } else if (this.grid[rows[1]][cols[1]] === "O") {
-            this.setMark(rows[0], cols[0]);
-            break;
-          };
+        } else if ((this.grid[x][2] === mark) && (this.grid[2][0] === "")) {
+          this.setMark(2, 0);
+          return true;
+          break;
         };
-      }
-    };
-    for (var x = 0; x < 3; x++) {
-      console.log("check X");
-      if (this.grid[x].includes("X")) {
-        if (this.grid[x].indexOf("X") != this.grid[x].lastIndexOf("X")) {
-          var colGap = this.grid[x].findIndex(function(row) {
-            return row === "";
-          });
-          this.setMark(x, colGap);
+      } else if (x === 2) {
+        if ((this.grid[x][0] === mark) && (this.grid[0][2] === "")) {
+          this.setMark(0, 2);
+          return true;
           break;
-        } else {
-          var colY = this.grid[x].indexOf("X");
-          var rows = columns.filter(function(col) { // rows are the 2 other rows that are not x ie; x from for loop
-            return col != x;
-          });
-          var cols = columns.filter(function(col) {
-            return col != colY; // ColY the y inside the column that had the X. cols is an array of the other y in the same column
-          });
-          console.log(x, cols);
-          if ((this.grid[rows[0]][colY] === "X") && (this.grid[rows[1]][colY] === "")) {
-            this.setMark(rows[1], colY);
-            break;
-          } else if ((this.grid[rows[1]][colY] === "X") && (this.grid[rows[0]][colY] === "")) {
-            this.setMark(rows[0], colY);
-            break;
-          } else if ((this.grid[rows[0]][cols[0]] === "X") && (this.grid[rows[1]][cols[1]] === "")) {
-            this.setMark(rows[1], cols[1]);
-            break;
-          } else if ((this.grid[rows[0]][cols[1]] === "X") && (this.grid[rows[1]][cols[0]] === "")) {
-            this.setMark(rows[1], cols[0]);
-            break;
-          } else if ((this.grid[rows[1]][cols[0]] === "X") && (this.grid[rows[0]][cols[1]] === "")) {
-            this.setMark(rows[0], cols[1]);
-            break;
-          } else if ((this.grid[rows[1]][cols[1]] === "X") && (this.grid[rows[0]][cols[0]] === "")) {
-            this.setMark(rows[0], cols[0]);
-            break;
-          };
+        } else if ((this.grid[x][2] === mark) && (this.grid[0][0] === "")) {
+          this.setMark(0, 0);
+          return true;
+          break;
+        };
+      } else if (x === 1) {
+        if ((this.grid[2][0] === mark) && (this.grid[0][2] === "")) {
+          this.setMark(0, 2);
+          return true;
+          break;
+        } else if ((this.grid[2][2] === mark) && (this.grid[0][0] === "")) {
+          this.setMark(0, 0);
+          return true;
+          break;
         };
       };
     };
+  };
+  return false;
+}
+
+Board.prototype.checkColumns = function(mark) {
+  for (var x = 0; x < 3; x++) {
+    if (this.grid[x].includes(mark)) {
+      if (this.grid[x].indexOf(mark) != this.grid[x].lastIndexOf(mark)) {
+        var colGap = this.grid[x].findIndex(function(row) {
+          return row === "";
+        });
+        this.setMark(x, colGap);
+        return true;
+        break;
+      };
+    };
+  };
+  return false;
+};
+
+Board.prototype.checkRows = function(mark) {
+  for (var y = 0; y < 3; y++) {
+    if ((this.grid[0][y] === mark) && (this.grid[1][y] === mark) && (this.grid[2][y] === "")) {
+      this.setMark(2, y);
+      return true;
+      break;
+    } else if ((this.grid[1][y] === mark) && (this.grid[2][y] === mark) && (this.grid[0][y] === "")) {
+      this.setMark(0, y);
+      return true;
+      break;
+    } else if ((this.grid[0][y] === mark) && (this.grid[2][y] === mark) && (this.grid[1][y] === "")) {
+      this.setMark(1, y);
+      return true;
+      break;
+    };
+  };
+  return false;
+};
+
+Board.prototype.smartComp = function() {
+  if (this.grid[1][1] === "") {
+    this.setMark(1, 1);
+  } else if (this.oCount() > 1) {
+    try {
+      var marked = false;
+      if (this.turn % 2 === 0) {
+        marked = this.checkDiagonal("O");
+      };
+      if (this.turn % 2 === 0) {
+        marked = this.checkColumns("O");
+      };
+      if (this.turn % 2 === 0) {
+        marked = this.checkRows("O");
+      };
+      if (this.turn % 2 === 0) {
+        marked = this.checkDiagonal("X");
+      }
+      if (this.turn % 2 === 0) {
+        marked = this.checkColumns("X");
+      }
+      if (this.turn % 2 === 0) {
+        marked = this.checkRows("X");
+      }
+      if (marked === false) {
+        throw "no marks"
+      }
+    } catch (e) {
+      this.dumbComp();
+    }
   } else {
     this.dumbComp();
   };
