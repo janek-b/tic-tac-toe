@@ -219,11 +219,11 @@ Board.prototype.smartComp = function() {
           break;
         } else {
           var colY = this.grid[x].indexOf("X");
-          var rows = columns.filter(function(col) {
+          var rows = columns.filter(function(col) { // rows are the 2 other rows that are not x ie; x from for loop
             return col != x;
           });
           var cols = columns.filter(function(col) {
-            return col != colY;
+            return col != colY; // ColY the y inside the column that had the X. cols is an array of the other y in the same column
           });
           console.log(x, cols);
           if ((this.grid[rows[0]][colY] === "X") && (this.grid[rows[1]][colY] === "")) {
